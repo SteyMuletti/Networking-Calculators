@@ -7,56 +7,79 @@ from tkinter import Tk
 root = Tk()
 root.withdraw()
 
-# Open a file dialog box to select a file
-file_path = filedialog.askopenfilename()
+def get_file_path():
+    """Prompt user to select a file and return its path"""
+    return filedialog.askopenfilename()
 
-# Check if the file exists
-if os.path.exists(file_path):
+def get_text():
+    """Prompt user to enter text and return it"""
+    return input('Enter text: ')
 
-    # Define a list of hash algorithms
-    hash_algorithms = {
-        'MD5': hashlib.md5,
-        'SHA-1': hashlib.sha1,
-        'SHA-256': hashlib.sha256,
-        'SHA-512': hashlib.sha512
-    }
-
-    # Prompt the user to select a hash algorithm
-    print('Select a hash algorithm:')
-    for i, algorithm in enumerate(hash_algorithms.keys()):
-        print(f'{i + 1}. {algorithm}')
+def get_content():
+    """Prompt user to select a file or enter text and return its content"""
     while True:
-        try:
-            choice = int(input('Enter your choice: '))
-            if choice in range(1, len(hash_algorithms) + 1):
-                break
+        choice = input('Select content:\n1. File\n2. Text\nEnter your choice: ')
+        if choice == '1':
+            file_path = get_file_path()
+            if os.path.exists(file_path):
+                with open(file_path, 'rb') as file:
+                    return file.read()
             else:
-                print('Invalid choice. Please enter a number between 1 and', len(hash_algorithms))
-        except ValueError:
-            print('Invalid input. Please enter a number.')
+                print('File does not exist. Please try again.')
+        elif choice == '2':
+            return bytes(get_text(), 'utf-8')
+        else:
+            print('Invalid choice. Please try again.')
 
-    # Get the selected hash algorithm
-    algorithm_name = list(hash_algorithms.keys())[choice - 1]
-    algorithm = hash_algorithms[algorithm_name]
+# Check if the file or text exists
+content = get_content()
 
-    # Open the file and read its contents
-    with open(file_path, 'rb') as file:
-        content = file.read()
+# Define a dictionary of hash algorithms
+hash_algorithms = {
+    'MD5': hashlib.md5,
+    'SHA-1': hashlib.sha1,
+    'SHA-256': hashlib.sha256,
+    'SHA-512': hashlib.sha512
+}
 
-    # Calculate the hash value of the file contents
-    hash_value = algorithm(content).hexdigest()
+# Prompt the user to select a hash algorithm
+print('Select a hash algorithm:')
+for i, algorithm in enumerate(hash_algorithms.keys()):
+    print(f'{i + 1}. {algorithm}')
+while True:
+    try:
+        choice = int(input('Enter your choice: '))
+        if choice in range(1, len(hash_algorithms) + 1):
+            break
+        else:
+            print('Invalid choice. Please enter a number between 1 and', len(hash_algorithms))
+    except ValueError:
+        print('Invalid input. Please enter a number.')
 
-    # Print the hash value
-    print(f"{algorithm_name} hash value of the file:", hash_value)
+# Get the selected hash algorithm
+algorithm_name = list(hash_algorithms.keys())[choice - 1]
+algorithm = hash_algorithms[algorithm_name]
 
-    # Prompt the user to enter a known hash value for verification
-    known_hash_value = input('Enter the known hash value for verification: ')
+# Calculate the hash value of the file or text contents
+hash_value = algorithm(content).hexdigest()
 
-    # Compare the computed hash value with the known hash value
-    if known_hash_value == hash_value:
-        print('Hash value verified: the file has not been tampered with.')
+# Print the hash value
+print(f"{algorithm_name} hash value of the file or text:", hash_value)
+
+# Prompt the user to enter a known hash value for verification or select a new file or text
+while True:
+    choice = input('Select an option:\n1. Verify hash value\n2. Pick new file or text\n3. Exit\nEnter your choice: ')
+    if choice == '1':
+        known_hash_value = input('Enter the known hash value for verification: ')
+        if known_hash_value == hash_value:
+            print('Hash value verified: the file or text has not been tampered with.')
+        else:
+            print('Hash value verification failed: the file or text may have been tampered with.')
+    elif choice == '2':
+        content = get_content()
+        hash_value = algorithm(content).hexdigest()
+        print(f"{algorithm_name} hash value of the new file or text:", hash_value)
+    elif choice == '3':
+        break
     else:
-        print('Hash value verification failed: the file may have been tampered with.')
-
-else:
-    print("File does not exist.")
+        print('Invalid choice. Please try again.')
