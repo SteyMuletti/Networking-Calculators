@@ -14,6 +14,10 @@ def subnet_calc():
 
     # Compute the network range in CIDR notation
     cidr_notation = f"{network_address}/{ip_network.prefixlen}"
+    
+    # Calculate the range of valid host IP addresses
+    first_host = ip_network.network_address + 1
+    last_host = ip_network.broadcast_address - 1
 
     # Create a dictionary to store the results
     results = {
@@ -22,6 +26,7 @@ def subnet_calc():
         "Number of hosts": num_hosts,
         "Number of subnets": num_subnets,
         "CIDR notation": cidr_notation,
+        "Range of valid host IP addresses": f"{first_host} - {last_host}"
     }
 
     # Print out the results.
