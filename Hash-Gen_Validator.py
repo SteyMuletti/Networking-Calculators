@@ -31,15 +31,22 @@ def get_content():
         else:
             print('Invalid choice. Please try again.')
 
-# Check if the file or text exists
-content = get_content()
-
 # Define a dictionary of hash algorithms
 hash_algorithms = {
     'MD5': hashlib.md5,
     'SHA-1': hashlib.sha1,
+    'SHA-224': hashlib.sha224,
     'SHA-256': hashlib.sha256,
-    'SHA-512': hashlib.sha512
+    'SHA-384': hashlib.sha384,
+    'SHA-512': hashlib.sha512,
+    'SHA3-224': hashlib.sha3_224,
+    'SHA3-256': hashlib.sha3_256,
+    'SHA3-384': hashlib.sha3_384,
+    'SHA3-512': hashlib.sha3_512,
+    'BLAKE2b': hashlib.blake2b,
+    'BLAKE2s': hashlib.blake2s,
+    'SHAKE128': hashlib.shake_128,
+    'SHAKE256': hashlib.shake_256,
 }
 
 # Prompt the user to select a hash algorithm
@@ -59,6 +66,9 @@ while True:
 # Get the selected hash algorithm
 algorithm_name = list(hash_algorithms.keys())[choice - 1]
 algorithm = hash_algorithms[algorithm_name]
+
+# Check if the file or text exists
+content = get_content()
 
 # Calculate the hash value of the file or text contents
 hash_value = algorithm(content).hexdigest()
